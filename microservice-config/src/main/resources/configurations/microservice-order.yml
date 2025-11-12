@@ -1,6 +1,18 @@
 server:
   port: 9090
 
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orderdb
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
 eureka:
   instance:
     hostname: localhost

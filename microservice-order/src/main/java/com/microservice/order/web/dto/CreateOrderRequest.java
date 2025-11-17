@@ -1,5 +1,12 @@
 package com.microservice.order.web.dto;
 
-public class CreateOrderRequest {
+import java.util.List;
 
+import lombok.Data;
+
+@Data
+public class CreateOrderRequest {
+	private List<OrderItemRequest> orderItems;
+	
+	
 }

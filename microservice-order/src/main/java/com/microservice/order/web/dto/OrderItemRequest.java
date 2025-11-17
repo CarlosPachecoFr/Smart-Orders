@@ -1,5 +1,12 @@
 package com.microservice.order.web.dto;
 
-public class OrderItemRequest {
+import lombok.Data;
 
+@Data
+public class OrderItemRequest {
+	private Long productId;
+	private double price;
+	private String currrency;
+	private int quantity;
+	
 }

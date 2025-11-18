@@ -20,12 +20,10 @@ public class OrderWebMapperImpl implements OrderWebMapper{
 	@Override
 	public Order toDomain(CreateOrderRequest orderRequest) {
 		List<OrderItem> orderItemList = new ArrayList<>();
-		Money money = new Money(10,"EUR"); //Solo para probar hasta usar feign para corroborar informacion con microservice-product
 		for(OrderItemRequest i: orderRequest.getOrderItems()) {
 			OrderItem orderItem = new OrderItem();
 			orderItem.setProductId(i.getProductId());
 			orderItem.setQuantity(i.getQuantity());
-			orderItem.setPrice(money);
 			
 			orderItemList.add(orderItem);
 		}

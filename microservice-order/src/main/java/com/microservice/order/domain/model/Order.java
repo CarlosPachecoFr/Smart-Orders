@@ -21,15 +21,14 @@ public class Order {
 		this.id = UUID.randomUUID();
 		this.orderItems = orderItems;
 		this.status = "CREATED";
-		this.total = this.calculateTotal(orderItems);
 	}
 	
-	public Money calculateTotal(List<OrderItem> orderItems) {
-		Money total = new Money(0,orderItems.get(0).getPrice().getCurrency());
-		for(OrderItem i: orderItems) {
-			total = total.add(i.getTotal());
-		}
-		return total;
+	public Money calculateTotal() {
+		this.total = this.orderItems.get(0).getTotal(); //sumamos en el for desde el segundo porque aqui le seteamos ya el primero
+		for (int i = 1; i < orderItems.size(); i++) {
+	        this.total = this.total.add(orderItems.get(i).getTotal());
+	    }
+		return this.total;
 	}
 
 	

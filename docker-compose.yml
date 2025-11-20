@@ -1,0 +1,204 @@
+version: "3.9"
+
+services:
+
+  # ===========================
+  # POSTGRES ORDER
+  # ===========================
+  order-db:
+    image: postgres:15
+    container_name: order-db
+    environment:
+      POSTGRES_DB: orderdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    networks:
+      - smartnet
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orderdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # ===========================
+  # POSTGRES PRODUCT
+  # ===========================
+  product-db:
+    image: postgres:15
+    container_name: product-db
+    environment:
+      POSTGRES_DB: productdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    networks:
+      - smartnet
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d productdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # ===========================
+  # CONFIG SERVER
+  # ===========================
+  microservice-config:
+    build:
+      context: ./microservice-config
+      dockerfile: Dockerfile
+    container_name: microservice-config
+    ports:
+      - "8888:8888"
+    networks:
+      - smartnet
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+    depends_on:
+      order-db:
+        condition: service_healthy
+      product-db:
+        condition: service_healthy
+
+  # ===========================
+  # EUREKA SERVER
+  # ===========================
+  microservice-eureka:
+    build:
+      context: ./microservice-eureka
+      dockerfile: Dockerfile
+    container_name: microservice-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - smartnet
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://microservice-config:8888
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      microservice-config:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f","http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  # ===========================
+  # GATEWAY
+  # ===========================
+  microservice-gateway:
+    build:
+      context: ./microservice-gateway
+      dockerfile: Dockerfile
+    container_name: microservice-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - smartnet
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://microservice-config:8888
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      microservice-config:
+        condition: service_healthy
+      microservice-eureka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f","http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  # ===========================
+  # ORDER MICROSERVICE
+  # ===========================
+  microservice-order:
+    build:
+      context: ./microservice-order
+      dockerfile: Dockerfile
+    container_name: microservice-order
+    ports:
+      - "9090:9090"
+    networks:
+      - smartnet
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://microservice-config:8888
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/orderdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      microservice-config:
+        condition: service_healthy
+      microservice-eureka:
+        condition: service_healthy
+      product-db:
+        condition: service_healthy
+      order-db:
+        condition: service_healthy
+      microservice-product:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f","http://localhost:9090/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  # ===========================
+  # PRODUCT MICROSERVICE
+  # ============================
+  microservice-product:
+    build:
+      context: ./microservice-product
+      dockerfile: Dockerfile
+    container_name: microservice-product
+    ports:
+      - "9091:9091"
+    networks:
+      - smartnet
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://microservice-config:8888
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5432/productdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      microservice-config:
+        condition: service_healthy
+      microservice-eureka:
+        condition: service_healthy
+      product-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f","http://localhost:9091/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+# ===========================
+# VOLUMES
+# ===========================
+volumes:
+  order-db-data:
+  product-db-data:
+
+# ===========================
+# NETWORK
+# ===========================
+networks:
+  smartnet:
+    driver: bridge

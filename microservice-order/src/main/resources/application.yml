@@ -3,5 +3,4 @@ spring:
     name: microservice-order
   config:
     import:
-      - optional:file:env.properties
-      - optional:configserver:http://localhost:8888
+      - optional:configserver:http://microservice-config:8888

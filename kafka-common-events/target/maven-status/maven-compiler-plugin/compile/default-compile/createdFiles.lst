@@ -1,0 +1,2 @@
+com\common\events\OrderItemCreatedEvent.class
+com\common\events\OrderCreatedEvent.class

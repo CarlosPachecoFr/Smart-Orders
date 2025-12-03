@@ -20,7 +20,7 @@ public class Order {
 		super();
 		this.id = UUID.randomUUID();
 		this.orderItems = orderItems;
-		this.status = "CREATED";
+		this.status = "PENDING";
 	}
 	
 	public Money calculateTotal() {

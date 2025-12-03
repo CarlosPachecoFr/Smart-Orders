@@ -23,6 +23,7 @@
   	<module>microservice-config</module>
   	<module>microservice-order</module>
   	<module>microservice-product</module>
+  	<module>kafka-common-events</module>
   </modules>
 
   <properties>

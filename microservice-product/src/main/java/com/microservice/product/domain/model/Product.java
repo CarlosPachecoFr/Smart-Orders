@@ -23,8 +23,12 @@ public class Product {
 		this.price = price;
 	}
 	
-	public int reserve(int quantity) {
-		this.stock -= quantity;
-		return this.stock;
+	public void reserve(int quantity) {
+		if(this.stock < quantity) {
+			 throw new IllegalArgumentException("Not enough stock for product " + this.productId);
+		}
+		else {
+			this.stock -= quantity;
+		}
 	}
 }

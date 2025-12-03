@@ -24,12 +24,10 @@ public class ProductRepositoryImpl implements ProductRepository{
 	}
 
 	@Override
-	public Product reserve(Product product) {
-		ProductEntity entity = jpaProductRepository.findById(product.getProductId())
-		    .orElseThrow(() -> new RuntimeException("Product not found"));
-		entity.setStock(productMapper.toDomain(entity).reserve(product.getQuantity()));
-		ProductEntity saved = jpaProductRepository.save(entity);
-		return productMapper.toDomain(saved);
+	public void save(Product product) {
+		ProductEntity entity = productMapper.toEntity(product);
+		
+		jpaProductRepository.save(entity);
 	}
 
 }

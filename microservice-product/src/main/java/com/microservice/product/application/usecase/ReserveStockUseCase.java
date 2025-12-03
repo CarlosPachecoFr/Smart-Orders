@@ -1,9 +1,9 @@
 package com.microservice.product.application.usecase;
 
-import com.microservice.product.domain.model.Product;
+import com.common.events.OrderCreatedEvent;
 
 public interface ReserveStockUseCase {
 
-	Product reserve(Product product);
+	void reserve(OrderCreatedEvent event);
 	
 }

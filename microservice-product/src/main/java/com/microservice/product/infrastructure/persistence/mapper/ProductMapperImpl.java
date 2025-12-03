@@ -13,6 +13,10 @@ public class ProductMapperImpl implements ProductMapper{
 	@Override
 	public ProductEntity toEntity(Product product) {
 		ProductEntity pe = new ProductEntity();
+		pe.setId(product.getProductId());
+		pe.setName(product.getName());
+		pe.setPrice(this.toEmbeddable(product.getPrice()));
+		pe.setProductId(product.getProductId());
 		pe.setStock(product.getStock());
 		return pe;
 	}

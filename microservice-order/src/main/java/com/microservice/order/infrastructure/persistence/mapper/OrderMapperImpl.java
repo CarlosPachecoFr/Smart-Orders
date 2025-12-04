@@ -19,6 +19,7 @@ public class OrderMapperImpl implements OrderMapper{
 	@Override
 	public OrderEntity toEntity(Order order) {
 		OrderEntity oe = new OrderEntity();
+		oe.setId(order.getId());
 		oe.setStatus(order.getStatus());
 		oe.setTotal(this.toEmbeddable(order.getTotal()));
 		

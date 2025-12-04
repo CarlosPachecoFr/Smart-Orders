@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.common.events.OrderCreatedEvent;
 import com.common.events.OrderItemCreatedEvent;
+import com.microservice.product.application.event.StockEventPublisher;
 import com.microservice.product.application.usecase.ReserveStockUseCase;
 import com.microservice.product.domain.model.Product;
 import com.microservice.product.domain.repository.ProductRepository;
@@ -17,14 +18,23 @@ public class ReserveStockService implements ReserveStockUseCase{
 	ProductRepository productRepository;
 	@Autowired
 	ProductMapper mapper;
+	@Autowired
+	StockEventPublisher publisher;
 
 	@Override
 	public void reserve(OrderCreatedEvent event) {
-		for(OrderItemCreatedEvent item: event.getItems()) {
-			Product product = productRepository.findById(item.getProductId());
-			product.reserve(item.getQuantity());
+		try {
+			for(OrderItemCreatedEvent item: event.getItems()) {
+				Product product = productRepository.findById(item.getProductId());
+				product.reserve(item.getQuantity());
+				
+				productRepository.save(product);
+			}
 			
-			productRepository.save(product);
+			publisher.stockReserved(event.getId());
+			
+		} catch (Exception e) {
+			publisher.stockRejected(event.getId());
 		}
 		
 	}

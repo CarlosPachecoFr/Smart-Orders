@@ -19,7 +19,6 @@ import lombok.Data;
 public class OrderEntity {
 
 	@Id
-	@GeneratedValue
 	private UUID id;
 	
 	@Column

@@ -1,9 +1,11 @@
 package com.microservice.order.domain.repository;
 
+import java.util.UUID;
+
 import com.microservice.order.domain.model.Order;
-import com.microservice.order.infrastructure.persistence.OrderEntity;
 
 public interface OrderRepository {
 
+	Order findById(UUID id);
 	Order save(Order order);
 }

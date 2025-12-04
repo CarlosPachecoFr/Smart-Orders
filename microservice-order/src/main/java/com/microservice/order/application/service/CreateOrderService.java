@@ -13,6 +13,9 @@ import com.microservice.order.infrastructure.client.ProductClient;
 import com.microservice.order.infrastructure.client.ProductDto;
 import com.microservice.order.infrastructure.mapper.OrderEventMapper;
 
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+
 @Service
 public class CreateOrderService implements CreateOrderUseCase{
 	
@@ -24,8 +27,11 @@ public class CreateOrderService implements CreateOrderUseCase{
 	private OrderCreatedEventPublisher publisher;
 	@Autowired
 	private OrderEventMapper mapperEvent;
+	@Autowired
+	private EntityManager entityManager; //necesario para forzar el commit a db con el metodo flush
 
 	@Override
+	@Transactional
 	public Order createOrder(Order order) {
 		for(OrderItem item: order.getOrderItems()) {
 			ProductDto product = client.findProductById(item.getProductId());
@@ -33,6 +39,7 @@ public class CreateOrderService implements CreateOrderUseCase{
 		}
 		order.calculateTotal();
 		Order saved = orderRepository.save(order);
+		entityManager.flush(); //se fuerza el commit a la db
 		
 		publisher.publish(mapperEvent.toEvent(order));
 		

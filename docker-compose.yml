@@ -134,6 +134,7 @@ services:
       - "2181:2181"
     networks:
       - smartnet
+
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
@@ -151,6 +152,20 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - smartnet
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+       - "8081:8080"
+    restart: always
+    networks:
+      - smartnet
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on:
+      - kafka
 
   # ===========================
   # ORDER MICROSERVICE

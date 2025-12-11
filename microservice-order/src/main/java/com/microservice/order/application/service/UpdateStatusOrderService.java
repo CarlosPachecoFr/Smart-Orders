@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.microservice.order.application.usecase.UpdateStatusOrderUseCase;
 import com.microservice.order.domain.model.Order;
-import com.microservice.order.domain.repository.OrderRepository;
+import com.microservice.order.domain.port.in.UpdateStatusOrderUseCase;
+import com.microservice.order.domain.port.out.OrderRepository;
 
 import jakarta.transaction.Transactional;
 

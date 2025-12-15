@@ -6,7 +6,7 @@ El proyecto está construido con **Java y Spring Boot**, aplicando **Domain-Driv
 
 ## 🏗️ Arquitectura
 
-El sistema sigue una **arquitectura hexagonal** (también conocida como Ports and Adapters), donde:
+El sistema sigue una **arquitectura hexagonal**, donde:
 
 - El **dominio** es completamente independiente de frameworks y tecnologías externas.
 - Los **casos de uso** se definen mediante **ports** (interfaces) que establecen los contratos de entrada y salida.
